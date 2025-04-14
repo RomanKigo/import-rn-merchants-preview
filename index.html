@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Merchant Data Mapper</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        font-family: sans-serif;
+      }
+      .container {
+        display: flex;
+        height: 100vh;
+      }
+      .json-view,
+      .table-view {
+        flex: 1;
+        padding: 1rem;
+        overflow-y: auto;
+      }
+      .json-view {
+        background-color: #f7f7f7;
+        border-right: 1px solid #ccc;
+      }
+      .json-controls {
+        margin-bottom: 1rem;
+      }
+      .json-controls button {
+        margin-right: 0.5rem;
+      }
+      .json-editor {
+        width: 100%;
+        font-family: monospace;
+        font-size: 14px;
+        border: none;
+        background: #f7f7f7;
+        outline: none;
+        white-space: pre-wrap;
+      }
+      .table-view {
+        position: relative;
+      }
+      .nav-buttons {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+      }
+      button {
+        margin: 0 0.5rem;
+        padding: 0.5rem 1rem;
+      }
+      .comment {
+        font-style: italic;
+        color: #666;
+      }
+      .highlight {
+        background-color: yellow;
+        font-weight: bold;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 2rem;
+      }
+      td,
+      th {
+        border: 1px solid #ccc;
+        padding: 0.5rem;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="json-view">
+        <div class="json-controls">
+          <button onclick="prevJson()">Prev JSON</button>
+          <button onclick="nextJson()">Next JSON</button>
+        </div>
+        <pre class="json-editor" id="jsonEditor"></pre>
+      </div>
+      <div class="table-view">
+        <div class="nav-buttons">
+          <button onclick="prevTable()">Previous</button>
+          <button onclick="nextTable()">Next</button>
+        </div>
+        <div id="tableView"></div>
+      </div>
+    </div>
+    <script>
+      const jsonFiles = [
+        {
+          merchantId: 3018,
+          merchantName: "Ann & Tony's",
+          fetchTimestamp: "2025-04-11T21:03:03.386Z",
+          data: {
+            id: 3018,
+            rating: {
+              overallRating: 4.7,
+              numberOfRatings: 12,
+              numberOfReviews: 12,
+            },
+            description:
+              "There are many arguments as to what the best eatery in Little Italy is, but one thing is for sure, Ann & Tony's is always amongst the top of the list. The famed Arthur Avenue roundup of authentic Italian eateries in this ethnic strip of Bronx, is one of the most delicious areas around, and Ann & Tony's menu features classic Mediterranean fare that is served fresh and in generous proportions. All of this has continually built during the seven decades Ann & Tony's has been serving Italian classics, while establishing itself as a neighborhood institution. A remodeling more than a decade ago gave the interior a new look, but the ever-popular Italian-style specialties have remained classics -- from veal and chicken to salmon and tuna, right down to penne with sausage and brocolli rabe, and everything in-between, Ann & Tony's delivers a tempting collection of drink options and fine fare. TEST.",
+            benefits: [
+              {
+                value: "7",
+                dayOfWeek: "Fri",
+                monthDay: "4/11/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Sat",
+                monthDay: "4/12/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Sun",
+                monthDay: "4/13/2025",
+              },
+              {
+                value: "0",
+                dayOfWeek: "Mon",
+                monthDay: "4/14/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Tue",
+                monthDay: "4/15/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Wed",
+                monthDay: "4/16/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Thu",
+                monthDay: "4/17/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Fri",
+                monthDay: "4/18/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Sat",
+                monthDay: "4/19/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Sun",
+                monthDay: "4/20/2025",
+              },
+              {
+                value: "0",
+                dayOfWeek: "Mon",
+                monthDay: "4/21/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Tue",
+                monthDay: "4/22/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Wed",
+                monthDay: "4/23/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Thu",
+                monthDay: "4/24/2025",
+              },
+            ],
+            type: "restaurant",
+            hours: [
+              {
+                dayOfWeek: "Mon",
+                dayHours: [],
+                openForBusiness: false,
+              },
+              {
+                dayOfWeek: "Tue",
+                dayHours: [
+                  {
+                    open: "11:00AM",
+                    close: "10:00PM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+              {
+                dayOfWeek: "Wed",
+                dayHours: [
+                  {
+                    open: "11:00AM",
+                    close: "10:00PM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+              {
+                dayOfWeek: "Thu",
+                dayHours: [
+                  {
+                    open: "11:00AM",
+                    close: "10:00PM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+              {
+                dayOfWeek: "Fri",
+                dayHours: [
+                  {
+                    open: "11:00AM",
+                    close: "10:00PM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+              {
+                dayOfWeek: "Sat",
+                dayHours: [
+                  {
+                    open: "11:00AM",
+                    close: "11:00PM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+              {
+                dayOfWeek: "Sun",
+                dayHours: [
+                  {
+                    open: "1:00PM",
+                    close: "9:00PM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+            ],
+            imageBaseUrl: "https://res.cloudinary.com/rn-stg",
+            logoImage: "t_legacy_logo/v1706908450/3018/logo.jpg",
+            logoImageHighQuality: "t_prime/v1706908450/3018/logo",
+            photos: [
+              "t_legacy_logo/v1706908450/3018/logo.jpg",
+              "t_legacy_photo/v1706908460/3018/promo.jpg",
+              "t_legacy_photo/v1706908461/3018/803018P2.jpg",
+              "t_legacy_photo/v1706908463/3018/803018P3.jpg",
+              "t_legacy_photo/v1706908464/3018/803018P4.jpg",
+              "t_legacy_photo/v1706908466/3018/803018P5.jpg",
+              "t_legacy_photo/v1706908468/3018/803018P6.jpg",
+              "t_legacy_photo/v1706908469/3018/803018P7.jpg",
+              "t_legacy_photo/3018/803018P8.jpg",
+              "t_legacy_photo/3018/803018P9.jpg",
+            ],
+            photosHighQuality: [
+              "t_prime/v1706908450/3018/logo",
+              "t_prime/v1706908460/3018/promo",
+              "t_prime/v1706908461/3018/803018P2",
+              "t_prime/v1706908463/3018/803018P3",
+              "t_prime/v1706908464/3018/803018P4",
+              "t_prime/v1706908466/3018/803018P5",
+              "t_prime/v1706908468/3018/803018P6",
+              "t_prime/v1706908469/3018/803018P7",
+              "t_prime/3018/803018P8",
+              "t_prime/3018/803018P9",
+            ],
+            menu: {
+              menuImages: [
+                "3018/803018U1",
+                "3018/803018U2",
+                "3018/803018U3",
+                "3018/803018U4",
+                "3018/803018U5",
+              ],
+            },
+            name: "Ann & Tony's",
+            cuisines: ["Italian"],
+            priceRange: 3,
+            location: {
+              neighborhood: "Bronx",
+              latitude: 40.855766,
+              longitude: -73.887396,
+              address: {
+                address1: "2407 Arthur Ave",
+                city: "Bronx",
+                state: "NY",
+                zip: "10458",
+              },
+            },
+            phone: "7189331469",
+            websiteUrl: "http://www.annandtonysonline.com",
+            highlight: "none",
+            features: [
+              {
+                category: "Breakfast",
+                types: ["Not Applicable"],
+              },
+              {
+                category: "Dinner",
+                types: ["Under $30"],
+              },
+              {
+                category: "Establishment Type",
+                types: ["Casual", "Restaurant"],
+              },
+              {
+                category: "Features",
+                types: [
+                  "Delivery",
+                  "Dress Code: Casual",
+                  "Family Friendly",
+                  "Gift Certificates Available",
+                  "High Chairs Available",
+                  "Romantic",
+                  "Smoke free",
+                  "Street Parking",
+                  "Take Out",
+                  "Transportation Nearby",
+                ],
+              },
+              {
+                category: "Lunch",
+                types: ["Under $20"],
+              },
+              {
+                category: "Open For",
+                types: ["Brunch", "Catering", "Dinner", "Lunch"],
+              },
+            ],
+            acceptedCards: [
+              "American Express",
+              "Discover",
+              "MasterCard",
+              "Visa",
+            ],
+            monthlyLimits: {
+              maximumSpend: 2000,
+              benefitType: "Unlimited",
+            },
+            hasDelivery: true,
+            hasTakeOut: true,
+          },
+        },
+        {
+          merchantId: 3853,
+          merchantName: "Sombrero",
+          fetchTimestamp: "2025-04-11T21:03:03.386Z",
+          data: {
+            id: 3853,
+            rating: {
+              overallRating: 4.3,
+              numberOfRatings: 32,
+              numberOfReviews: 32,
+            },
+            description:
+              "This upscale dining establishment has served the New York theater and business communities since 1985. Rosa's Place offers daily three-course lunch and dinner specials. For a perfect dining experience in warm weather, choose to sit outside while sipping on one of the restaurant's many refreshing margaritas. Or sit inside and drink in the vibrant décor, with its bright yellow and orange walls and colorful prints with splashes of fuschia and blue. The large, moderately priced menu showcases Mexican cuisine, with starters of black bean soup, guacamole with chips, ceviche and empanadas con carne. The entrees include salads, traditional dishes such as burritos and fajitas, and a number of \"Rosa's Specialties,\" such as crispy red snapper burritos, Trout Vita (broiled with butter, pine nuts and coriander) and a roasted half-chicken. The drink list is extensive and includes margaritas by the glass or the pitcher, several beers (domestic and imported), several wines and several liquors.  ",
+            benefits: [
+              {
+                value: "7",
+                dayOfWeek: "Fri",
+                monthDay: "4/11/2025",
+              },
+              {
+                value: "0",
+                dayOfWeek: "Sat",
+                monthDay: "4/12/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Sun",
+                monthDay: "4/13/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Mon",
+                monthDay: "4/14/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Tue",
+                monthDay: "4/15/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Wed",
+                monthDay: "4/16/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Thu",
+                monthDay: "4/17/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Fri",
+                monthDay: "4/18/2025",
+              },
+              {
+                value: "0",
+                dayOfWeek: "Sat",
+                monthDay: "4/19/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Sun",
+                monthDay: "4/20/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Mon",
+                monthDay: "4/21/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Tue",
+                monthDay: "4/22/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Wed",
+                monthDay: "4/23/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Thu",
+                monthDay: "4/24/2025",
+              },
+            ],
+            type: "restaurant",
+            hours: [
+              {
+                dayOfWeek: "Mon",
+                dayHours: [
+                  {
+                    open: "11:30AM",
+                    close: "12:00AM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+              {
+                dayOfWeek: "Tue",
+                dayHours: [
+                  {
+                    open: "11:30AM",
+                    close: "12:00AM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+              {
+                dayOfWeek: "Wed",
+                dayHours: [
+                  {
+                    open: "11:30AM",
+                    close: "12:00AM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+              {
+                dayOfWeek: "Thu",
+                dayHours: [
+                  {
+                    open: "11:30AM",
+                    close: "12:00AM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+              {
+                dayOfWeek: "Fri",
+                dayHours: [
+                  {
+                    open: "11:30AM",
+                    close: "12:00AM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+              {
+                dayOfWeek: "Sat",
+                dayHours: [
+                  {
+                    open: "11:30AM",
+                    close: "12:00AM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+              {
+                dayOfWeek: "Sun",
+                dayHours: [
+                  {
+                    open: "11:30AM",
+                    close: "12:00AM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+            ],
+            imageBaseUrl: "https://res.cloudinary.com/rn-stg",
+            logoImage: "t_legacy_logo/v1706818957/3853/logo.jpg",
+            logoImageHighQuality: "t_prime/v1706818957/3853/logo",
+            photos: [
+              "t_legacy_logo/v1706818957/3853/logo.jpg",
+              "t_legacy_photo/v1706818979/3853/promo.jpg",
+              "t_legacy_photo/v1706818981/3853/803853P2.jpg",
+              "t_legacy_photo/v1706818984/3853/803853P3.jpg",
+              "t_legacy_photo/3853/803853P1.jpg",
+              "t_legacy_photo/v1706818986/3853/803853P4.jpg",
+              "t_legacy_photo/v1706818988/3853/803853P5.jpg",
+              "t_legacy_photo/v1706818991/3853/803853P6.jpg",
+              "t_legacy_photo/v1706818993/3853/803853P7.jpg",
+              "t_legacy_photo/v1706818996/3853/803853P8.jpg",
+              "t_legacy_photo/3853/803853P9.jpg",
+            ],
+            photosHighQuality: [
+              "t_prime/v1706818957/3853/logo",
+              "t_prime/v1706818979/3853/promo",
+              "t_prime/v1706818981/3853/803853P2",
+              "t_prime/v1706818984/3853/803853P3",
+              "t_prime/3853/803853P1",
+              "t_prime/v1706818986/3853/803853P4",
+              "t_prime/v1706818988/3853/803853P5",
+              "t_prime/v1706818991/3853/803853P6",
+              "t_prime/v1706818993/3853/803853P7",
+              "t_prime/v1706818996/3853/803853P8",
+              "t_prime/3853/803853P9",
+            ],
+            menu: {
+              menuImages: [
+                "v1706818972/3853/803853U6",
+                "v1706818977/3853/803853U8",
+                "v1706818958/3853/803853U1",
+                "v1706818964/3853/803853U3",
+                "v1706818974/3853/803853U7",
+                "v1706818960/3853/803853U2",
+                "v1706818967/3853/803853U4",
+                "v1706818970/3853/803853U5",
+              ],
+            },
+            name: "Sombrero",
+            cuisines: ["Mexican"],
+            priceRange: 3,
+            location: {
+              neighborhood: "West Side 45th-62nd Streets",
+              latitude: 40.761096,
+              longitude: -73.987152,
+              address: {
+                address1: "303 W 48th St",
+                city: "New York",
+                state: "NY",
+                zip: "10036",
+              },
+            },
+            phone: "2125864853",
+            websiteUrl: "http://www.sombrerorestaurant.com/",
+            twitterUrl: "https://twitter.com/SombreroNYC",
+            highlight: "none",
+            features: [
+              {
+                category: "Breakfast",
+                types: ["Not Applicable"],
+              },
+              {
+                category: "Dinner",
+                types: ["Under $30"],
+              },
+              {
+                category: "Establishment Type",
+                types: ["Casual", "Restaurant"],
+              },
+              {
+                category: "Features",
+                types: [
+                  "Business Friendly",
+                  "Children's Menu Available",
+                  "Delivery",
+                  "Dress Code: Casual",
+                  "Entertainment District ",
+                  "Family Friendly",
+                  "Full Bar",
+                  "Gift Certificates Available",
+                  "Happy Hour",
+                  "High Chairs Available",
+                  "Movie Theater Nearby",
+                  "Outdoor dining",
+                  "Reservations Recommended",
+                  "Smoke free",
+                  "Street Parking",
+                  "Take Out",
+                  "Transportation Nearby",
+                  "Wine List ",
+                ],
+              },
+              {
+                category: "Lunch",
+                types: ["Under $20"],
+              },
+              {
+                category: "Open For",
+                types: ["Dinner", "Lunch", "Private Parties"],
+              },
+            ],
+            acceptedCards: [
+              "American Express",
+              "Discover",
+              "MasterCard",
+              "Visa",
+            ],
+            monthlyLimits: {
+              maximumSpend: 2000,
+              benefitType: "Unlimited",
+            },
+            hasDelivery: true,
+            hasTakeOut: true,
+          },
+        },
+        {
+          merchantId: 6725,
+          merchantName: "Trinity Brewhouse",
+          fetchTimestamp: "2025-04-11T21:03:03.386Z",
+          data: {
+            id: 6725,
+            rating: {
+              overallRating: 4.7,
+              numberOfRatings: 9,
+              numberOfReviews: 9,
+            },
+            description:
+              "Trinity Brewhouse serves American, ribs, burgers and steaks in a warm. Friendly ambiance, where every day there's a party. But above all, Trinity Brewhouse is serious about its beer. Trinity is a place for dining out, private parties and kegs. Trinity's beer is fresh-brewed right on the premises. Its staff will be happy to cater your party. Or check out the events in their downstairs Fennenteria. Or order a keg and have your own party.",
+            benefits: [
+              {
+                value: "0",
+                dayOfWeek: "Fri",
+                monthDay: "4/11/2025",
+              },
+              {
+                value: "0",
+                dayOfWeek: "Sat",
+                monthDay: "4/12/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Sun",
+                monthDay: "4/13/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Mon",
+                monthDay: "4/14/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Tue",
+                monthDay: "4/15/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Wed",
+                monthDay: "4/16/2025",
+              },
+              {
+                value: "0",
+                dayOfWeek: "Thu",
+                monthDay: "4/17/2025",
+              },
+              {
+                value: "0",
+                dayOfWeek: "Fri",
+                monthDay: "4/18/2025",
+              },
+              {
+                value: "0",
+                dayOfWeek: "Sat",
+                monthDay: "4/19/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Sun",
+                monthDay: "4/20/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Mon",
+                monthDay: "4/21/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Tue",
+                monthDay: "4/22/2025",
+              },
+              {
+                value: "7",
+                dayOfWeek: "Wed",
+                monthDay: "4/23/2025",
+              },
+              {
+                value: "0",
+                dayOfWeek: "Thu",
+                monthDay: "4/24/2025",
+              },
+            ],
+            type: "restaurant",
+            hours: [
+              {
+                dayOfWeek: "Mon",
+                dayHours: [
+                  {
+                    open: "11:30AM",
+                    close: "1:00AM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+              {
+                dayOfWeek: "Tue",
+                dayHours: [
+                  {
+                    open: "11:30AM",
+                    close: "1:00AM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+              {
+                dayOfWeek: "Wed",
+                dayHours: [
+                  {
+                    open: "11:30AM",
+                    close: "1:00AM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+              {
+                dayOfWeek: "Thu",
+                dayHours: [
+                  {
+                    open: "11:30AM",
+                    close: "1:00AM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+              {
+                dayOfWeek: "Fri",
+                dayHours: [
+                  {
+                    open: "11:30AM",
+                    close: "2:00AM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+              {
+                dayOfWeek: "Sat",
+                dayHours: [
+                  {
+                    open: "11:30AM",
+                    close: "2:00AM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+              {
+                dayOfWeek: "Sun",
+                dayHours: [
+                  {
+                    open: "12:00PM",
+                    close: "1:00AM",
+                  },
+                ],
+                openForBusiness: true,
+              },
+            ],
+            imageBaseUrl: "https://res.cloudinary.com/rn-stg",
+            logoImage: "t_legacy_logo/v1706818898/6725/logo.jpg",
+            logoImageHighQuality: "t_prime/v1706818898/6725/logo",
+            photos: [
+              "t_legacy_logo/v1706818898/6725/logo.jpg",
+              "t_legacy_photo/v1718747496/6725/promo.jpg",
+              "t_legacy_photo/v1706818909/6725/806725P1.jpg",
+              "t_legacy_photo/v1712073627/6725/806725P2.jpg",
+              "t_legacy_photo/6725/806725P3.jpg",
+              "t_legacy_photo/v1706818913/6725/806725P4.jpg",
+              "t_legacy_photo/v1706818914/6725/806725P5.jpg",
+              "t_legacy_photo/v1706818916/6725/806725P6.jpg",
+              "t_legacy_photo/v1706818917/6725/806725P7.jpg",
+              "t_legacy_photo/v1706818919/6725/806725P8.jpg",
+              "t_legacy_photo/v1706818920/6725/806725P9.jpg",
+            ],
+            photosHighQuality: [
+              "t_prime/v1706818898/6725/logo",
+              "t_prime/v1718747496/6725/promo",
+              "t_prime/v1706818909/6725/806725P1",
+              "t_prime/v1712073627/6725/806725P2",
+              "t_prime/6725/806725P3",
+              "t_prime/v1706818913/6725/806725P4",
+              "t_prime/v1706818914/6725/806725P5",
+              "t_prime/v1706818916/6725/806725P6",
+              "t_prime/v1706818917/6725/806725P7",
+              "t_prime/v1706818919/6725/806725P8",
+              "t_prime/v1706818920/6725/806725P9",
+            ],
+            menu: {
+              menuImages: [
+                "v1706818899/6725/806725U1",
+                "v1706818901/6725/806725U2",
+                "v1706818906/6725/806725U4",
+                "v1706818904/6725/806725U3",
+                "v1706818907/6725/806725U5",
+              ],
+            },
+            name: "Trinity Brewhouse",
+            cuisines: ["Bar/Pub Fare"],
+            priceRange: 2,
+            location: {
+              neighborhood: "Providence County",
+              latitude: 41.822511,
+              longitude: -71.416927,
+              address: {
+                address1: "186 Fountain St",
+                city: "Providence",
+                state: "RI",
+                zip: "02903",
+              },
+            },
+            phone: "4014532337",
+            websiteUrl: "http://www.trinitybrewhouse.com/",
+            highlight: "none",
+            features: [
+              {
+                category: "Breakfast",
+                types: ["Not Applicable"],
+              },
+              {
+                category: "Dinner",
+                types: ["Under $20"],
+              },
+              {
+                category: "Establishment Type",
+                types: ["Casual", "Restaurant"],
+              },
+              {
+                category: "Features",
+                types: [
+                  "Dress Code: Casual",
+                  "Family Friendly",
+                  "Full Bar",
+                  "Gift Certificates Available",
+                  "Live Music",
+                  "Movie Theater Nearby",
+                  "Private Room Available",
+                  "Reservations Accepted",
+                  "Romantic",
+                  "Smoke free",
+                  "Street Parking",
+                  "Take Out",
+                  "Valet Parking ",
+                ],
+              },
+              {
+                category: "Lunch",
+                types: ["Under $10"],
+              },
+              {
+                category: "Open For",
+                types: ["Catering", "Dinner", "Late-Night Dining", "Lunch"],
+              },
+            ],
+            acceptedCards: [
+              "American Express",
+              "Discover",
+              "MasterCard",
+              "Visa",
+            ],
+            monthlyLimits: {
+              maximumSpend: 2000,
+              benefitType: "Unlimited",
+            },
+            hasDelivery: false,
+            hasTakeOut: true,
+          },
+        },
+      ];
+
+      const tables = [
+        {
+          name: "merchant.merchants",
+          fields: [
+            ["id", "uuid generate v4"],
+            [
+              "merchant_id",
+              "We have RN.merchant.merchantId — should we use this as merchant_id or generate the next value for mom.merchant_id differently?",
+            ],
+            ["merchant_version", "What value should merchant_version have?"],
+            ["corporation_name", "null"],
+            ["dba_name", "null"],
+            ["salesforce_reference", "null"],
+            ["default_language", "en-US"],
+            ["default_currency", "USD"],
+            ["status", "What status should be set?"],
+            ["external_uri", "Should this be RN.merchant.data.websiteUrl?"],
+            [
+              "copy_text",
+              "Should we use RN.merchant.data.description for this field?",
+            ],
+            ["street_address", "RN.merchant.data.location.address.address1"],
+            [
+              "property_address",
+              "For property_address, should we use RN.merchant.data.location.address.address2?",
+            ],
+            ["city", "RN.merchant.data.location.address.city"],
+            ["county", "null"],
+            ["region", "null"],
+            ["state_code", "RN.merchant.data.location.address.state"],
+            ["country", "Hardcode to US?"],
+            ["postal_code", "RN.merchant.data.location.address.zip"],
+            ["naics_code", "null"],
+            ["sic_code", "null"],
+            ["created_date", "current date"],
+            ["created_by", "000"],
+            ["updated_date", "current date"],
+            ["updated_by", "000"],
+            ["data_source", "What should we add here?"],
+            ["draft_corp_name", "Should we add RN.merchant.merchantName here?"],
+            ["draft_dba_name", "Should we add RN.merchant.merchantName here?"],
+            ["sales_territory", "null"],
+            ["source", "rewards_network"],
+          ],
+        },
+        {
+          name: "merchant.asset",
+          fields: [
+            ["asset_id", "uuid generate v4"],
+            ["merchant_id", "RN.merchant.merchantId"],
+            ["asset_type", "MerchantLogo?"],
+            ["asset_name", "MerchantLogo[id]?"],
+            [
+              "asset_uri",
+              "url = RN.merchant.data.imageBaseUrl + RN.merchant.data.logoImage or should we add the logo images like https://logos.entertainment.com/... or https://img.entertainment.com/... ?",
+            ],
+            ["deleted_date", "null"],
+            [
+              "status",
+              "What should the status be? I see value 'A' in the database.",
+            ],
+            ["hash", "null"],
+          ],
+        },
+        {
+          name: "merchant.categories",
+          fields: [
+            ["merchant_category_id", "nextval"],
+            ["merchant_id", "RN.merchant.merchantId"],
+            [
+              "category_id",
+              "I'm not sure how we determine the category — do you have any ideas?",
+            ],
+          ],
+        },
+        {
+          name: "merchant.commodity",
+          fields: [
+            ["merchant_commodity_id", "nextval"],
+            ["merchant_id", "RN.merchant.merchantId"],
+            [
+              "commodity_id",
+              "Looks like we can use RN.merchant.data.cuisines to get IDs from config.commodities. What if no commodity is found by ID?",
+            ],
+          ],
+        },
+        {
+          name: "merchant.corporate_names",
+          fields: [],
+        },
+        {
+          name: "merchant.dba_names",
+          fields: [],
+        },
+        {
+          name: "merchant.locations",
+          fields: [
+            ["id", "uuid generate v4"],
+            ["location_id", "nextval"],
+            ["location_version", "What version should we assign?"],
+            ["merchant_id", "RN.merchant.merchantID"],
+            ["street_address", "RN.merchant.data.location.address.address1"],
+            [
+              "property_address",
+              "For property_address, should we use RN.merchant.data.location.address.address2?",
+            ],
+            ["city", "RN.merchant.data.location.address.city"],
+            ["county", "null"],
+            ["region", "null"],
+            ["state_code", "RN.merchant.data.location.address.state"],
+            ["country", "Should we hardcode 'US' here?"],
+            ["postal_code", "RN.merchant.data.location.address.zip"],
+            ["latitude", "RN.merchant.data.location.address.latitude"],
+            ["longitude", "RN.merchant.data.location.address.longitude"],
+            ["radius_in_metres", "0"],
+            ["created_date", "current date"],
+            ["created_by", "000"],
+            ["updated_date", "current date"],
+            ["updated_by", "000"],
+            ["status", "What status?"],
+            ["type", "What type?"],
+            [
+              "geolocation_point",
+              "POINT (RN.merchant.data.location.address.longitude, RN.merchant.data.location.address.latitude)",
+            ],
+          ],
+        },
+      ];
+      let currentTableIndex = 0;
+      let currentJsonIndex = 0;
+
+      function getJsonStringWithHighlights(jsonData, paths) {
+        let jsonStr = JSON.stringify(jsonData, null, 2);
+        for (let i = 0; i < paths.length; i++) {
+          const path = paths[i];
+          const cleanPath = path
+            .replace("RN.merchant.", "")
+            .replace(/\[(\d+)\]/g, ".$1");
+          const lastKey = cleanPath.split(".").pop();
+          const regex = new RegExp(`("${lastKey}")(?=\s*:)`, "g");
+          jsonStr = jsonStr.replace(regex, `<span class="highlight">$1</span>`);
+        }
+        return jsonStr;
+      }
+
+      function renderJsonEditor(matchedPaths = []) {
+        const editor = document.getElementById("jsonEditor");
+        const jsonData = jsonFiles[currentJsonIndex];
+        editor.innerHTML = getJsonStringWithHighlights(jsonData, matchedPaths);
+      }
+
+      function renderTable() {
+        const jsonData = jsonFiles[currentJsonIndex];
+        const { name, fields } = tables[currentTableIndex];
+        const el = document.getElementById("tableView");
+        let html = `<h2>${name}</h2><table><thead><tr><th>Field</th><th>Comment</th></tr></thead><tbody>`;
+        const matchedPaths = [];
+
+        fields.forEach(([field, comment]) => {
+          let matchedClass = "";
+          const matchPattern = /RN\.merchant(?:\.data)?\.[a-zA-Z0-9_.]+/g;
+          const matches = comment.match(matchPattern);
+          if (matches) {
+            for (let path of matches) {
+              try {
+                const cleanPath = path
+                  .replace("RN.merchant.", "")
+                  .replace(/\[(\d+)\]/g, ".$1");
+                const val = eval(`jsonData.${cleanPath}`);
+                if (val !== undefined) {
+                  matchedClass = "highlight";
+                  matchedPaths.push(path);
+                  break;
+                }
+              } catch (_) {
+                continue;
+              }
+            }
+          }
+          html += `<tr class="${matchedClass}"><td>${field}</td><td class="comment">${comment}</td></tr>`;
+        });
+
+        html += "</tbody></table>";
+        el.innerHTML = html;
+        renderJsonEditor(matchedPaths);
+      }
+
+      function prevTable() {
+        currentTableIndex =
+          (currentTableIndex - 1 + tables.length) % tables.length;
+        renderTable();
+      }
+
+      function nextTable() {
+        currentTableIndex = (currentTableIndex + 1) % tables.length;
+        renderTable();
+      }
+
+      function prevJson() {
+        currentJsonIndex =
+          (currentJsonIndex - 1 + jsonFiles.length) % jsonFiles.length;
+        renderTable();
+      }
+
+      function nextJson() {
+        currentJsonIndex = (currentJsonIndex + 1) % jsonFiles.length;
+        renderTable();
+      }
+
+      renderTable();
+    </script>
+  </body>
+</html>
