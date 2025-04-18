@@ -88,6 +88,24 @@
       </div>
       <div class="table-view">
         <div class="nav-buttons">
+          <input
+            type="radio"
+            name="table"
+            value="merchant"
+            id="merchant"
+            checked
+            onchange="switchTable('merchant')"
+          />
+          <label for="merchant">Merchant</label>
+          <input
+            type="radio"
+            name="table"
+            value="offer"
+            id="offer"
+            onchange="switchTable('offer')"
+          />
+          <label for="offer">Offer</label>
+
           <button onclick="prevTable()">Previous</button>
           <button onclick="nextTable()">Next</button>
         </div>
@@ -898,134 +916,289 @@
         },
       ];
 
-      const tables = [
-        {
-          name: "merchant.merchants",
-          fields: [
-            ["id", "uuid generate v4"],
-            [
-              "merchant_id",
-              "We have RN.merchant.merchantId — should we use this as merchant_id or generate the next value for mom.merchant_id differently?",
+      const tables = {
+        merchant: [
+          {
+            name: "1. merchant.merchants",
+            fields: [
+              ["id", "uuid generate v4"],
+              [
+                "merchant_id",
+                "We have RN.merchant.merchantId — should we use this as merchant_id or generate the next value for mom.merchant_id differently?",
+              ],
+              ["merchant_version", "What value should merchant_version have?"],
+              ["corporation_name", "null"],
+              ["dba_name", "null"],
+              ["salesforce_reference", "null"],
+              ["default_language", "en-US"],
+              ["default_currency", "USD"],
+              ["status", "What status should be set?"],
+              ["external_uri", "Should this be RN.merchant.data.websiteUrl?"],
+              [
+                "copy_text",
+                "Should we use RN.merchant.data.description for this field?",
+              ],
+              ["street_address", "RN.merchant.data.location.address.address1"],
+              [
+                "property_address",
+                "For property_address, should we use RN.merchant.data.location.address.address2?",
+              ],
+              ["city", "RN.merchant.data.location.address.city"],
+              ["county", "null"],
+              ["region", "null"],
+              ["state_code", "RN.merchant.data.location.address.state"],
+              ["country", "Hardcode to US?"],
+              ["postal_code", "RN.merchant.data.location.address.zip"],
+              ["naics_code", "null"],
+              ["sic_code", "null"],
+              ["created_date", "current date"],
+              ["created_by", "000"],
+              ["updated_date", "current date"],
+              ["updated_by", "000"],
+              ["data_source", "What should we add here?"],
+              [
+                "draft_corp_name",
+                "Should we add RN.merchant.merchantName here?",
+              ],
+              [
+                "draft_dba_name",
+                "Should we add RN.merchant.merchantName here?",
+              ],
+              ["sales_territory", "null"],
+              ["source", "rewards_network"],
             ],
-            ["merchant_version", "What value should merchant_version have?"],
-            ["corporation_name", "null"],
-            ["dba_name", "null"],
-            ["salesforce_reference", "null"],
-            ["default_language", "en-US"],
-            ["default_currency", "USD"],
-            ["status", "What status should be set?"],
-            ["external_uri", "Should this be RN.merchant.data.websiteUrl?"],
-            [
-              "copy_text",
-              "Should we use RN.merchant.data.description for this field?",
+          },
+          {
+            name: "2. merchant.asset",
+            fields: [
+              ["asset_id", "uuid generate v4"],
+              ["merchant_id", "RN.merchant.merchantId"],
+              ["asset_type", "MerchantLogo?"],
+              ["asset_name", "MerchantLogo[id]?"],
+              [
+                "asset_uri",
+                "url = RN.merchant.data.imageBaseUrl + RN.merchant.data.logoImage or should we add the logo images like https://logos.entertainment.com/... or https://img.entertainment.com/... ?",
+              ],
+              ["deleted_date", "null"],
+              [
+                "status",
+                "What should the status be? I see value 'A' in the database.",
+              ],
+              ["hash", "null"],
             ],
-            ["street_address", "RN.merchant.data.location.address.address1"],
-            [
-              "property_address",
-              "For property_address, should we use RN.merchant.data.location.address.address2?",
+          },
+          {
+            name: "3. merchant.categories",
+            fields: [
+              ["merchant_category_id", "nextval"],
+              ["merchant_id", "RN.merchant.merchantId"],
+              [
+                "category_id",
+                "I'm not sure how we determine the category — do you have any ideas?",
+              ],
             ],
-            ["city", "RN.merchant.data.location.address.city"],
-            ["county", "null"],
-            ["region", "null"],
-            ["state_code", "RN.merchant.data.location.address.state"],
-            ["country", "Hardcode to US?"],
-            ["postal_code", "RN.merchant.data.location.address.zip"],
-            ["naics_code", "null"],
-            ["sic_code", "null"],
-            ["created_date", "current date"],
-            ["created_by", "000"],
-            ["updated_date", "current date"],
-            ["updated_by", "000"],
-            ["data_source", "What should we add here?"],
-            ["draft_corp_name", "Should we add RN.merchant.merchantName here?"],
-            ["draft_dba_name", "Should we add RN.merchant.merchantName here?"],
-            ["sales_territory", "null"],
-            ["source", "rewards_network"],
-          ],
-        },
-        {
-          name: "merchant.asset",
-          fields: [
-            ["asset_id", "uuid generate v4"],
-            ["merchant_id", "RN.merchant.merchantId"],
-            ["asset_type", "MerchantLogo?"],
-            ["asset_name", "MerchantLogo[id]?"],
-            [
-              "asset_uri",
-              "url = RN.merchant.data.imageBaseUrl + RN.merchant.data.logoImage or should we add the logo images like https://logos.entertainment.com/... or https://img.entertainment.com/... ?",
+          },
+          {
+            name: "4. merchant.commodity",
+            fields: [
+              ["merchant_commodity_id", "nextval"],
+              ["merchant_id", "RN.merchant.merchantId"],
+              [
+                "commodity_id",
+                "Looks like we can use RN.merchant.data.cuisines to get IDs from config.commodities. What if no commodity is found by ID?",
+              ],
             ],
-            ["deleted_date", "null"],
-            [
-              "status",
-              "What should the status be? I see value 'A' in the database.",
+          },
+          {
+            name: "5. merchant.corporate_names",
+            fields: [],
+          },
+          {
+            name: "6. merchant.dba_names",
+            fields: [],
+          },
+          {
+            name: "7. merchant.locations",
+            fields: [
+              ["id", "uuid generate v4"],
+              ["location_id", "nextval"],
+              ["location_version", "What version should we assign?"],
+              ["merchant_id", "RN.merchant.merchantID"],
+              ["street_address", "RN.merchant.data.location.address.address1"],
+              [
+                "property_address",
+                "For property_address, should we use RN.merchant.data.location.address.address2?",
+              ],
+              ["city", "RN.merchant.data.location.address.city"],
+              ["county", "null"],
+              ["region", "null"],
+              ["state_code", "RN.merchant.data.location.address.state"],
+              ["country", "Should we hardcode 'US' here?"],
+              ["postal_code", "RN.merchant.data.location.address.zip"],
+              ["latitude", "RN.merchant.data.location.address.latitude"],
+              ["longitude", "RN.merchant.data.location.address.longitude"],
+              ["radius_in_metres", "0"],
+              ["created_date", "current date"],
+              ["created_by", "000"],
+              ["updated_date", "current date"],
+              ["updated_by", "000"],
+              ["status", "What status?"],
+              ["type", "What type?"],
+              [
+                "geolocation_point",
+                "POINT (RN.merchant.data.location.address.longitude, RN.merchant.data.location.address.latitude)",
+              ],
             ],
-            ["hash", "null"],
-          ],
-        },
-        {
-          name: "merchant.categories",
-          fields: [
-            ["merchant_category_id", "nextval"],
-            ["merchant_id", "RN.merchant.merchantId"],
-            [
-              "category_id",
-              "I'm not sure how we determine the category — do you have any ideas?",
+          },
+        ],
+        offer: [
+          {
+            name: "1. offer.offers",
+            fields: [
+              ["unique_offer_id", "UUID"],
+              ["offer_id", "nextval"],
+              ["version", "1"],
+              ["version_created", "Date now"],
+              ["version_active_from", "Date now"],
+              ["merchant_owner", "merchant_id"],
+              ["default_language", "en-US"],
+              ["external_reference", ""],
+              ["offer_expiry_date", "null?"],
+              ["offer_status", ""],
+              ["offer_type", ""],
+              ["offer_redemption_methods", ""],
+              ["edition_exclusivity", "null?"],
+              ["code_type", ""],
+              ["clickthru_url", ""],
+              ["classification", ""],
             ],
-          ],
-        },
-        {
-          name: "merchant.commodity",
-          fields: [
-            ["merchant_commodity_id", "nextval"],
-            ["merchant_id", "RN.merchant.merchantId"],
-            [
-              "commodity_id",
-              "Looks like we can use RN.merchant.data.cuisines to get IDs from config.commodities. What if no commodity is found by ID?",
+          },
+          {
+            name: "2. offer.offer_usage_controls",
+            fields: [],
+          },
+          {
+            name: "3. offer.offer_unique_codes",
+            fields: [
+              ["offer_unique_code_id", "nextval"],
+              ["offer_id", "offer_id"],
+              ["offer_unique_code", ""],
+              ["offer_code_single_use", ""],
+              ["offer_code_created", "Date now"],
+              ["offer_code_used_by", ""],
+              ["offer_code_used_date", ""],
             ],
-          ],
-        },
-        {
-          name: "merchant.corporate_names",
-          fields: [],
-        },
-        {
-          name: "merchant.dba_names",
-          fields: [],
-        },
-        {
-          name: "merchant.locations",
-          fields: [
-            ["id", "uuid generate v4"],
-            ["location_id", "nextval"],
-            ["location_version", "What version should we assign?"],
-            ["merchant_id", "RN.merchant.merchantID"],
-            ["street_address", "RN.merchant.data.location.address.address1"],
-            [
-              "property_address",
-              "For property_address, should we use RN.merchant.data.location.address.address2?",
+          },
+          {
+            name: "4. offer.offer_types",
+            fields: [],
+          },
+          {
+            name: "5. offer.offer_tags",
+            fields: [
+              ["offer_id", "offer_id"],
+              ["tag_id", ""],
+              ["date_added", "Date now"],
             ],
-            ["city", "RN.merchant.data.location.address.city"],
-            ["county", "null"],
-            ["region", "null"],
-            ["state_code", "RN.merchant.data.location.address.state"],
-            ["country", "Should we hardcode 'US' here?"],
-            ["postal_code", "RN.merchant.data.location.address.zip"],
-            ["latitude", "RN.merchant.data.location.address.latitude"],
-            ["longitude", "RN.merchant.data.location.address.longitude"],
-            ["radius_in_metres", "0"],
-            ["created_date", "current date"],
-            ["created_by", "000"],
-            ["updated_date", "current date"],
-            ["updated_by", "000"],
-            ["status", "What status?"],
-            ["type", "What type?"],
-            [
-              "geolocation_point",
-              "POINT (RN.merchant.data.location.address.longitude, RN.merchant.data.location.address.latitude)",
+          },
+          {
+            name: "6. offer.offer_savings",
+            fields: [
+              ["offer_savings_id", "nextval"],
+              ["unique_offer_id", "offers.unique_offer_id"],
+              ["market_id", ""],
+              ["savings_value", ""],
+              ["max_savings_value", ""],
+              ["currency", ""],
             ],
-          ],
-        },
-      ];
+          },
+          {
+            name: "7. offer.offer_redemption_controls",
+            fields: [
+              ["offer_id", "offers.offer_id"],
+              ["redemption_control_type", ""],
+              ["redemption_control_details", ""],
+              ["offer_limit", ""],
+            ],
+          },
+          {
+            name: "8. offer.offer_descriptive",
+            fields: [
+              ["offer_descriptive_id", "nextval"],
+              ["unique_offer_id", "offers.unique_offer_id"],
+              ["offer_version", "1"],
+              ["market_id", "1?"],
+              ["language_id", "en-US"],
+              ["short_text", ""],
+              ["long_text", ""],
+              ["conditions_text", ""],
+              ["unique_code_label_text", "null?"],
+              ["usage_text", "null?"],
+            ],
+          },
+          {
+            name: "9. offer.offer_commodities",
+            fields: [
+              ["offer_commodity_id", "nextval"],
+              ["offer_id", "offers.offer_id"],
+              ["commodity_id", ""],
+            ],
+          },
+          {
+            name: "10. offer.offer_code_display",
+            fields: [
+              ["id", "nextval"],
+              ["unique_offer_id", "offers.unique_offer_id"],
+              ["code_display_type", ""],
+              ["code_display_detail", ""],
+              ["code_label_text", ""],
+              ["code", ""],
+              ["display_order", ""],
+            ],
+          },
+          {
+            name: "11. offer.offer_categories",
+            fields: [
+              ["offer_category_id", "nextval"],
+              ["offer_id", "offers.offer_id"],
+              ["category_id", ""],
+            ],
+          },
+          {
+            name: "12. offer.offer_asset",
+            fields: [
+              ["asset_id", "uuid"],
+              ["offer_id", "offers.offer_id"],
+              ["asset_type", ""],
+              ["asset_name", ""],
+              ["asset_uri", ""],
+              ["deleted_date", ""],
+              ["status", ""],
+              ["hash", ""],
+            ],
+          },
+          {
+            name: "13. offer.available_locations",
+            fields: [
+              ["available_location_id", "nextval"],
+              ["location_id", ""],
+              ["offer_id", "offers.offer_id"],
+              ["active_from", ""],
+              ["expires_on", "null"],
+            ],
+          },
+          {
+            name: "14. offer.allowed_markets",
+            fields: [
+              ["allowed_market_id", "nextval"],
+              ["offer_id", "offers.offer_id"],
+              ["market_id", ""],
+            ],
+          },
+        ],
+      };
+
+      let currentTableName = "merchant";
       let currentTableIndex = 0;
       let currentJsonIndex = 0;
 
@@ -1051,7 +1224,9 @@
 
       function renderTable() {
         const jsonData = jsonFiles[currentJsonIndex];
-        const { name, fields } = tables[currentTableIndex];
+        console.log("rendering table", currentTableName, currentTableIndex);
+
+        const { name, fields } = tables[currentTableName][currentTableIndex];
         const el = document.getElementById("tableView");
         let html = `<h2>${name}</h2><table><thead><tr><th>Field</th><th>Comment</th></tr></thead><tbody>`;
         const matchedPaths = [];
@@ -1087,12 +1262,14 @@
 
       function prevTable() {
         currentTableIndex =
-          (currentTableIndex - 1 + tables.length) % tables.length;
+          (currentTableIndex - 1 + tables[currentTableName].length) %
+          tables[currentTableName].length;
         renderTable();
       }
 
       function nextTable() {
-        currentTableIndex = (currentTableIndex + 1) % tables.length;
+        currentTableIndex =
+          (currentTableIndex + 1) % tables[currentTableName].length;
         renderTable();
       }
 
@@ -1104,6 +1281,13 @@
 
       function nextJson() {
         currentJsonIndex = (currentJsonIndex + 1) % jsonFiles.length;
+        renderTable();
+      }
+
+      function switchTable(table) {
+        console.log("switching table", table);
+        currentTableIndex = 0;
+        currentTableName = table;
         renderTable();
       }
 
